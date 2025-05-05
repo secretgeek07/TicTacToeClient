@@ -32,7 +32,6 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         InitBoard();
-        // UpdateTurnText();
     }
 
     public void InitBoard()
@@ -54,7 +53,6 @@ public class GameManager : MonoBehaviour
         board = new string[3, 3];
         currentPlayer = "X";
         gameOver = false;
-        // isMyTurn = true;
         if (!IsOnlineMode)
         {
             isMyTurn = true;
@@ -78,15 +76,14 @@ public class GameManager : MonoBehaviour
 
     public void MakeMove(int row, int col, Cell cell)
     {
-         Debug.Log($"Cell 2 clicked at ({row}, {col})");
         if (gameOver || board[row, col] != null) return;
-        Debug.Log($"Cell 3 clicked at ({row}, {col})");
+
         if (IsOnlineMode && !isMyTurn) return;
-        Debug.Log($"Cell 4 clicked at ({row}, {col})");
-        // board[row, col] = currentPlayer;
-        // cell.SetText(currentPlayer);
-        board[row, col] = myMark;
-        cell.SetText(myMark);
+
+        string markToUse = IsOnlineMode ? myMark : currentPlayer;
+        board[row, col] = markToUse;
+        cell.SetText(markToUse);
+
 
 
         if (IsOnlineMode)
@@ -135,7 +132,6 @@ public class GameManager : MonoBehaviour
         }
 
         SwitchTurn();
-        // isMyTurn = true;
     }
 
     private void ShowWinScreen()
@@ -152,10 +148,6 @@ public class GameManager : MonoBehaviour
 
     private void SwitchTurn()
     {
-        // currentPlayer = (currentPlayer == "X") ? "O" : "X";
-        // Debug.Log($"[SwitchTurn] IsOnline: {IsOnlineMode}, MyMark: {myMark}, isMyTurn: {isMyTurn}, currentPlayer: {currentPlayer}");
-        // UpdateTurnText();
-
         currentPlayer = (currentPlayer == "X") ? "O" : "X";
         if (IsOnlineMode)
         {
@@ -167,10 +159,6 @@ public class GameManager : MonoBehaviour
         UpdateTurnText();
     }
 
-    // private void UpdateTurnText()
-    // {
-    //     playerTurnText.text = $"Player {currentPlayer}'s Turn";
-    // }
     private void UpdateTurnText()
     {
         if (IsOnlineMode)
@@ -224,7 +212,6 @@ public class GameManager : MonoBehaviour
     public void StartOnlineGame()
     {
         currentPlayer = "X"; 
-        //isMyTurn = (currentPlayer == "X");
         statusText.text = "Opponent joined. Game started!";
         SetBoardInteractable(isMyTurn);
     }
@@ -238,8 +225,6 @@ public class GameManager : MonoBehaviour
         {
             if (cell.row == row && cell.col == col)
             {
-                // board[row, col] = currentPlayer;
-                // cell.SetText(currentPlayer);
                 string opponentMark = myMark == "X" ? "O" : "X";
                 board[row, col] = opponentMark;
                 cell.SetText(opponentMark);
@@ -299,5 +284,12 @@ public class GameManager : MonoBehaviour
         SetBoardInteractable(false);
         gamePageCanvas.SetActive(false);
         endPage.ShowResult("Game ended due to timeout.");
+    }
+        public void ShowOpponentLeftMessage()
+    {
+        gameOver = true;
+        SetBoardInteractable(false);
+        gamePageCanvas.SetActive(false);
+        endPage.ShowResult("Opponent left the game.");
     }
 }

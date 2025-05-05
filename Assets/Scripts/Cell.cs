@@ -20,8 +20,22 @@ public class Cell : MonoBehaviour
 
     public void SetText(string text)
     {
+        // cellText.text = text;
+        // button.interactable = false;
         cellText.text = text;
-        button.interactable = false;
+
+        if (text == "X")
+        {
+            cellText.color = Color.red;
+            GetComponent<Image>().color = new Color(1f, 0.9f, 0.9f); 
+        }
+        else if (text == "O")
+        {
+            cellText.color = Color.blue;
+            GetComponent<Image>().color = new Color(0.9f, 0.9f, 1f); 
+        }
+
+        button.interactable = false; 
     }
 
     public void OnClick()

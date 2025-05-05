@@ -98,6 +98,11 @@ public class NetworkManager : MonoBehaviour
                 Debug.Log("Game ended due to timeout.");
                 GameManager.Instance.HandleTimeout(); 
             }
+            else if (msg.action == "opponent_left")
+            {
+                Debug.Log("Opponent left the match.");
+                GameManager.Instance.ShowOpponentLeftMessage();
+            }
         }
         catch (Exception e)
         {
