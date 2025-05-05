@@ -167,9 +167,28 @@ public class GameManager : MonoBehaviour
         UpdateTurnText();
     }
 
+    // private void UpdateTurnText()
+    // {
+    //     playerTurnText.text = $"Player {currentPlayer}'s Turn";
+    // }
     private void UpdateTurnText()
     {
-        playerTurnText.text = $"Player {currentPlayer}'s Turn";
+        if (IsOnlineMode)
+        {
+            if ((myMark == currentPlayer) && isMyTurn)
+            {
+                playerTurnText.text = $"Your turn, move with '{myMark}'";
+            }
+            else
+            {
+                string opponentMark = myMark == "X" ? "O" : "X";
+                playerTurnText.text = $"Opponent's turn, they're playing '{opponentMark}'";
+            }
+        }
+        else
+        {
+            playerTurnText.text = $"Player {currentPlayer}'s Turn";
+        }
     }
 
     private bool CheckWin()
@@ -256,12 +275,6 @@ public class GameManager : MonoBehaviour
             }
         }
     }
-    // public void StartOnlineGameAfterOpponentJoins()
-    // {
-    //     statusText.text = $"Player {currentPlayer}'s Turn";
-    //     SetBoardInteractable(isMyTurn);
-    //     UpdateTurnText();
-    // }
 
     public void StartOnlineGameAfterOpponentJoins()
     {
@@ -276,5 +289,15 @@ public class GameManager : MonoBehaviour
         isMyTurn = (myMark == "X"); // I go first only if I'm X
         Debug.Log($"SetPlayerMark: My mark is {myMark}, isMyTurn: {isMyTurn}");
         Debug.Log($"[SetPlayerMarl] IsOnline: {IsOnlineMode}, MyMark: {myMark}, isMyTurn: {isMyTurn}");
+    }
+    
+    public void HandleTimeout()
+    {
+        if (gameOver) return;
+
+        gameOver = true;
+        SetBoardInteractable(false);
+        gamePageCanvas.SetActive(false);
+        endPage.ShowResult("Game ended due to timeout.");
     }
 }

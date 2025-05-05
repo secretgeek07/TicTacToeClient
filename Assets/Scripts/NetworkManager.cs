@@ -44,6 +44,10 @@ public class NetworkManager : MonoBehaviour
         {
             Debug.Log("Connection closed!");
             isConnected = false;
+            if (GameManager.Instance != null && GameManager.Instance.IsOnlineMode)
+            {
+                GameManager.Instance.HandleTimeout();
+            }
         };
         Debug.Log("Checking for messages...");
         websocket.OnMessage += (bytes) =>
@@ -88,6 +92,11 @@ public class NetworkManager : MonoBehaviour
                 Debug.Log("Match started! My mark is: " + msg.mark);
                 GameManager.Instance.SetPlayerMark(msg.mark);
                 GameManager.Instance.StartOnlineGameAfterOpponentJoins();
+            }
+            else if (msg.action == "timeout")
+            {
+                Debug.Log("Game ended due to timeout.");
+                GameManager.Instance.HandleTimeout(); 
             }
         }
         catch (Exception e)
