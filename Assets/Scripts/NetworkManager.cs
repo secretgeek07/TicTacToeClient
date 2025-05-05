@@ -12,20 +12,26 @@ public class NetworkManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     public async void ConnectToMatchmaking()
     {
-        websocket = new WebSocket("ws://10.187.97.114:8080/ws");
-
+        websocket = new WebSocket("ws://10.187.96.25:8080/ws");
         websocket.OnOpen += async () =>
         {
             Debug.Log("Connection open!");
 
-            // Send a "join" message immediately after connecting
             string joinMessage = "{\"action\":\"join\"}";
+            Debug.Log("Join message sent successfully!");
             await websocket.SendText(joinMessage);
         };
 
@@ -39,7 +45,7 @@ public class NetworkManager : MonoBehaviour
             Debug.Log("Connection closed!");
             isConnected = false;
         };
-
+        Debug.Log("Checking for messages...");
         websocket.OnMessage += (bytes) =>
         {
             string message = System.Text.Encoding.UTF8.GetString(bytes);
@@ -65,7 +71,8 @@ public class NetworkManager : MonoBehaviour
 
     private void HandleServerMessage(string message)
     {
-        Debug.Log("Handling server message: " + message);
+        Debug.Log("=== RAW SERVER MESSAGE ===");
+        Debug.Log(message);
         try
         {
             ServerMessage msg = JsonUtility.FromJson<ServerMessage>(message);
@@ -74,6 +81,7 @@ public class NetworkManager : MonoBehaviour
             {
                 Debug.Log($"Opponent moved at ({msg.row}, {msg.col})");
                 GameManager.Instance.ReceiveOpponentMove(msg.row, msg.col);
+                GameManager.Instance.SetBoardInteractable(true);
             }
             else if (msg.action == "start")
             {
@@ -87,8 +95,6 @@ public class NetworkManager : MonoBehaviour
             Debug.LogError("Failed to parse server message: " + e.Message);
         }
     }
-
-
 
     public async void SendMove(int row, int col)
     {

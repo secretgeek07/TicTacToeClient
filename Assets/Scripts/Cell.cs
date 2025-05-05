@@ -13,7 +13,7 @@ public class Cell : MonoBehaviour
         row = r;
         col = c;
         button = GetComponent<Button>();
-        button.onClick.AddListener(OnClick);
+        // button.onClick.AddListener(OnClick);
         cellText.text = "";
         button.interactable = true;
     }
@@ -24,8 +24,9 @@ public class Cell : MonoBehaviour
         button.interactable = false;
     }
 
-    private void OnClick()
+    public void OnClick()
     {
+        Debug.Log($"Cell clicked at ({row}, {col})");
         GameManager.Instance.MakeMove(row, col, this);
     }
 }

@@ -54,7 +54,11 @@ public class GameManager : MonoBehaviour
         board = new string[3, 3];
         currentPlayer = "X";
         gameOver = false;
-        isMyTurn = true;
+        // isMyTurn = true;
+        if (!IsOnlineMode)
+        {
+            isMyTurn = true;
+        }
 
         gamePageCanvas.SetActive(true);
 
@@ -69,21 +73,27 @@ public class GameManager : MonoBehaviour
             SetBoardInteractable(true);
             UpdateTurnText();
         }
+        Debug.Log($"[Init] IsOnline: {IsOnlineMode}, MyMark: {myMark}, isMyTurn: {isMyTurn}");
     }
 
     public void MakeMove(int row, int col, Cell cell)
     {
+         Debug.Log($"Cell 2 clicked at ({row}, {col})");
         if (gameOver || board[row, col] != null) return;
-
+        Debug.Log($"Cell 3 clicked at ({row}, {col})");
         if (IsOnlineMode && !isMyTurn) return;
+        Debug.Log($"Cell 4 clicked at ({row}, {col})");
+        // board[row, col] = currentPlayer;
+        // cell.SetText(currentPlayer);
+        board[row, col] = myMark;
+        cell.SetText(myMark);
 
-        board[row, col] = currentPlayer;
-        cell.SetText(currentPlayer);
 
         if (IsOnlineMode)
         {
             NetworkManager.Instance.SendMove(row, col);
             isMyTurn = false;
+            SetBoardInteractable(false);
         }
 
         if (CheckWin())
@@ -125,7 +135,7 @@ public class GameManager : MonoBehaviour
         }
 
         SwitchTurn();
-        isMyTurn = true;
+        // isMyTurn = true;
     }
 
     private void ShowWinScreen()
@@ -142,7 +152,18 @@ public class GameManager : MonoBehaviour
 
     private void SwitchTurn()
     {
+        // currentPlayer = (currentPlayer == "X") ? "O" : "X";
+        // Debug.Log($"[SwitchTurn] IsOnline: {IsOnlineMode}, MyMark: {myMark}, isMyTurn: {isMyTurn}, currentPlayer: {currentPlayer}");
+        // UpdateTurnText();
+
         currentPlayer = (currentPlayer == "X") ? "O" : "X";
+        if (IsOnlineMode)
+        {
+            isMyTurn = (myMark == currentPlayer);
+            SetBoardInteractable(isMyTurn);
+        }
+
+        Debug.Log($"[SwitchTurn] IsOnline: {IsOnlineMode}, MyMark: {myMark}, isMyTurn: {isMyTurn}, currentPlayer: {currentPlayer}");
         UpdateTurnText();
     }
 
@@ -184,7 +205,7 @@ public class GameManager : MonoBehaviour
     public void StartOnlineGame()
     {
         currentPlayer = "X"; 
-        isMyTurn = (currentPlayer == "X");
+        //isMyTurn = (currentPlayer == "X");
         statusText.text = "Opponent joined. Game started!";
         SetBoardInteractable(isMyTurn);
     }
@@ -198,8 +219,11 @@ public class GameManager : MonoBehaviour
         {
             if (cell.row == row && cell.col == col)
             {
-                board[row, col] = currentPlayer;
-                cell.SetText(currentPlayer);
+                // board[row, col] = currentPlayer;
+                // cell.SetText(currentPlayer);
+                string opponentMark = myMark == "X" ? "O" : "X";
+                board[row, col] = opponentMark;
+                cell.SetText(opponentMark);
                 break;
             }
         }
@@ -251,5 +275,6 @@ public class GameManager : MonoBehaviour
         currentPlayer = "X"; // X always starts
         isMyTurn = (myMark == "X"); // I go first only if I'm X
         Debug.Log($"SetPlayerMark: My mark is {myMark}, isMyTurn: {isMyTurn}");
+        Debug.Log($"[SetPlayerMarl] IsOnline: {IsOnlineMode}, MyMark: {myMark}, isMyTurn: {isMyTurn}");
     }
 }
