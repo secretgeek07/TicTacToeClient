@@ -9,7 +9,6 @@ public class NetworkManager : MonoBehaviour
 
     private WebSocket websocket;
     public bool isConnected = false;
-
     private void Awake()
     {
         if (Instance == null)
@@ -76,11 +75,10 @@ public class NetworkManager : MonoBehaviour
     private void HandleServerMessage(string message)
     {
         Debug.Log("=== RAW SERVER MESSAGE ===");
-        Debug.Log(message);
+        
         try
         {
             ServerMessage msg = JsonUtility.FromJson<ServerMessage>(message);
-
             if (msg.action == "move")
             {
                 Debug.Log($"Opponent moved at ({msg.row}, {msg.col})");
